@@ -1,10 +1,9 @@
-PROJECT = "SSLC Intermediate Server"
 all:
 
 install: ;
-	npm install express body-parser
+	$(MAKE) -C server install;
 
 clean: ;
-	rm -rf node_modules;
+	$(MAKE) -C server clean;
 
 .PHONY: install clean

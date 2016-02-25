@@ -1,5 +1,5 @@
 /**
- * A simple node.js server which "sits between" the chrome extentions front end
+ * A simple node.js server which "sits between" the chrome extension front end
  * and the SSLChain backend, a C++ Server and facilitaties communications between
  * them.
  */
@@ -8,7 +8,14 @@ var net = require('net');
 var fs = require('fs');
 var express = require('express');
 var bodyParser = require('body-parser');
+var https = require('https');
+
 var server = express();	//Initialize Server
+
+https.createServer({
+	key: fs.readFileSync('cert/key.pem'),
+	cert: fs.readFileSync('cert/cert.pem')
+}, server).listen(8080);
 
 var key;
 var returnStr;
@@ -57,6 +64,6 @@ server.post('/', function(req, res, next){
 	});
 });
 
-server.listen(8080);
+//server.listen(8080);
 
 console.log('Server running on port 8080.');
