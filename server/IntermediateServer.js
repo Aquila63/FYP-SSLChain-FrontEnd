@@ -47,21 +47,33 @@ server.post('/', function(req, res, next){
 	console.log(req.headers);
 	console.log(req.url);
 
-	//body = {data : email}
-	email = req.body.email;
+	//body = {type: 1, email : <data>}
+	if(req.body.type == 1)
+	{
+		email = req.body.email;
 
-	var client = new net.Socket();
-	client.connect(2048, '127.0.0.1', function(){
-		console.log('Connected to SSLC Server');
-		client.write('GET PUB KEY ' + email);
-	});
+		var client = new net.Socket();
+		client.connect(2048, '127.0.0.1', function(){
+			console.log('Connected to SSLC Server');
+			client.write('GET PUB KEY ' + email);
+		});
 
-	client.on('data', function(data){
-		console.log('Recieved: ' + data);
-		returnStr = data;
-		res.send(returnStr);
-		client.destroy();
-	});
+		client.on('data', function(data){
+			console.log('Recieved: ' + data);
+			returnStr = data;
+			res.send(returnStr);
+			client.destroy();
+		});
+	}
+
+	//body = {type: 2, data : path}
+	if(req.body.type == 2)
+	{
+		path = req.body.data;
+		data = fs.readFileSync(path);
+		console.log(data);
+		res.send(data);
+	}
 });
 
 //server.listen(8080);

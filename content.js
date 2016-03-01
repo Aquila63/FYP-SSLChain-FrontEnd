@@ -1,13 +1,22 @@
+function readFile(file){
+	var fileReader = new FileReader();
+	fileReader.onload = function(fileLoadedEvent){
+		var fileContent = fileLoadedEvent.target.result;
+		return fileContent;
+	}
+	fileReader.readAsText(file);
+}
+
 InboxSDK.load('1', 'sdk_FYP-SSLChain_1241528717').then(function(sdk){
 	sdk.Compose.registerComposeViewHandler(function(composeView){
 		composeView.addButton({
-			title: "Test Button",
-			iconUrl: 'https://lh5.googleusercontent.com/itq66nh65lfCick8cJ-OPuqZ8OUDTIxjCc25dkc4WUT1JG8XG3z6-eboCu63_uDXSqMnLRdlvQ=s128-h128-e365',
-			//iconUrl: 'Lock-Lock-icon.png',
+			title: "Encrypt",
+			//Hotlinked since getURL() isn't working for me atm
+			iconUrl: 'https://icons.iconarchive.com/icons/hopstarter/soft-scraps/128/Lock-Lock-icon.png',
+			//iconUrl: chrome.extension.getURL('Lock-Lock-icon.png'),
 			onClick: function(event){
 				var recipient = event.composeView.getToRecipients();
 				rEmail = recipient[0].emailAddress;
-				console.log("1");
 				var xhttp = new XMLHttpRequest();
 
 				//This is executed when the client recieved a response from the server
@@ -29,7 +38,33 @@ InboxSDK.load('1', 'sdk_FYP-SSLChain_1241528717').then(function(sdk){
 				xhttp.setRequestHeader("Content-Type", "application/json; charset=UTF-8");
 
 				//Format the text in the form {email : "<email>"} and send
-				xhttp.send(JSON.stringify({email:rEmail}));
+				xhttp.send(JSON.stringify({type:1, email:rEmail}));
+
+			},
+		});
+
+		composeView.addButton({
+			title: "Decrypt",
+			//Hotlinked since getURL() isn't working for me atm
+			iconUrl: 'https://icons.iconarchive.com/icons/hopstarter/soft-scraps/128/Lock-Unlock-icon.png',
+			onClick: function(event){
+				var textToDecrypt = event.composeView.getTextContent();
+				var xhttp = new XMLHttpRequest();
+				var file = "/home/ciaran/fypkeys/genKey1.pem"
+				//This is executed when the client recieved a response from the server
+				xhttp.onreadystatechange = function(){
+					if(xhttp.readyState == 4 && xhttp.status == 200){
+					    var key = xhttp.responseText;
+						var decrypt = new JSEncrypt();
+						decrypt.setPrivateKey(key);
+						var decryptedText = decrypt.decrypt(textToDecrypt);
+						event.composeView.setBodyText(decryptedText);
+					}
+				};
+				//New HTTP POST request
+				xhttp.open("POST", "https://127.0.0.1:8080", true);
+				xhttp.setRequestHeader("Content-Type", "application/json; charset=UTF-8");
+				xhttp.send(JSON.stringify({type:2, data:file}));
 
 			},
 		});
