@@ -11,7 +11,7 @@
           "https://mail.google.com/*",
           "https://inbox.google.com/*"
         ],
-        "js": ["lib/jsencrypt.js", "lib/inboxsdk.js","content.js"],
+        "js": ["lib/jsencrypt.js", "lib/inboxsdk.js","lib/jquery-2.2.1.min.js", "content.js"],
         "run_at": "document_end"
       }
     ],

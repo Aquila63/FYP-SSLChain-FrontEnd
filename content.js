@@ -69,4 +69,36 @@ InboxSDK.load('1', 'sdk_FYP-SSLChain_1241528717').then(function(sdk){
 			},
 		});
 	});
+
+	sdk.Conversations.registerMessageViewHandler(function(messageView){
+		messageView.addToolbarButton({
+			section: "MORE",
+			title: "Decrypt",
+			iconUrl: 'https://icons.iconarchive.com/icons/hopstarter/soft-scraps/128/Lock-Unlock-icon.png',
+			onClick: function(event){
+				var body = messageView.getBodyElement()
+				console.log(body);
+				var textToDecrypt = body.innerText;
+				var element = $(document).find('[class*="ii gt"] div');
+				var xhttp = new XMLHttpRequest();
+				var file = "/home/ciaran/fypkeys/genKey5.pem"
+				//This is executed when the client recieved a response from the server
+				xhttp.onreadystatechange = function(){
+					if(xhttp.readyState == 4 && xhttp.status == 200){
+						var key = xhttp.responseText;
+						var decrypt = new JSEncrypt();
+						decrypt.setPrivateKey(key);
+						var decryptedText = decrypt.decrypt(textToDecrypt);
+						console.log(decryptedText);
+						//console.log(element);
+						element.html(decryptedText);
+					}
+				};
+				//New HTTP POST request
+				xhttp.open("POST", "https://127.0.0.1:8080", true);
+				xhttp.setRequestHeader("Content-Type", "application/json; charset=UTF-8");
+				xhttp.send(JSON.stringify({type:2, data:file}));
+			},
+		});
+	});
 });
