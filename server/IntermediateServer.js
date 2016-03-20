@@ -55,8 +55,12 @@ server.post('/', function(req, res, next){
 		var client = new net.Socket();
 		client.connect(2048, '127.0.0.1', function(){
 			console.log('Connected to SSLC Server');
-			client.write('GET PUB KEY ' + email);
+			client.write('GET PUB KEY ' + email + '\n');
 		});
+
+		client.on('error', function(err){
+			console.log('Error - ', err);
+		})
 
 		client.on('data', function(data){
 			console.log('Recieved: ' + data);

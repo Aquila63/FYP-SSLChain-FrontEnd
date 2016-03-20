@@ -1,14 +1,10 @@
-function readFile(file){
-	var fileReader = new FileReader();
-	fileReader.onload = function(fileLoadedEvent){
-		var fileContent = fileLoadedEvent.target.result;
-		return fileContent;
-	}
-	fileReader.readAsText(file);
-}
-
 InboxSDK.load('1', 'sdk_FYP-SSLChain_1241528717').then(function(sdk){
 	sdk.Compose.registerComposeViewHandler(function(composeView){
+
+		/*
+		 * Encryption button within the Compose box
+		 */
+
 		composeView.addButton({
 			title: "Encrypt",
 			//Hotlinked since getURL() isn't working for me atm
@@ -43,6 +39,10 @@ InboxSDK.load('1', 'sdk_FYP-SSLChain_1241528717').then(function(sdk){
 			},
 		});
 
+		/*
+		 * Decryption button within the Compose box
+		 */
+
 		composeView.addButton({
 			title: "Decrypt",
 			//Hotlinked since getURL() isn't working for me atm
@@ -50,7 +50,7 @@ InboxSDK.load('1', 'sdk_FYP-SSLChain_1241528717').then(function(sdk){
 			onClick: function(event){
 				var textToDecrypt = event.composeView.getTextContent();
 				var xhttp = new XMLHttpRequest();
-				var file = "/home/ciaran/fypkeys/genKey1.pem"
+				var file = "/home/ciaran/fypkeys/genKey5.pem"
 				//This is executed when the client recieved a response from the server
 				xhttp.onreadystatechange = function(){
 					if(xhttp.readyState == 4 && xhttp.status == 200){
@@ -69,6 +69,12 @@ InboxSDK.load('1', 'sdk_FYP-SSLChain_1241528717').then(function(sdk){
 			},
 		});
 	});
+
+
+	/*
+	 * Decryption button within the Thread view (i.e. a recieved email)
+	 * Not persistent - has to be decrypted every time the page is refreshed 
+	 */
 
 	sdk.Conversations.registerMessageViewHandler(function(messageView){
 		messageView.addToolbarButton({
